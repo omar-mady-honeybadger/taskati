@@ -7,6 +7,8 @@ class CustomTextFormField extends StatelessWidget {
     super.key,
     required this.label,
     this.hintText,
+    this.minLines = 1,
+    this.maxLines = 1,
     this.validator,
     this.onTap,
     this.keyboardType,
@@ -16,6 +18,8 @@ class CustomTextFormField extends StatelessWidget {
 
   final String label;
   final String? hintText;
+  final int minLines;
+  final int maxLines;
   final bool enabled;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
@@ -48,6 +52,8 @@ class CustomTextFormField extends StatelessWidget {
             ],
           ),
           child: TextFormField(
+            minLines: minLines,
+            maxLines: maxLines,
             controller: controller,
             keyboardType: keyboardType,
             onTapOutside: (event) {

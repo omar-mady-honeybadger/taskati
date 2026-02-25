@@ -3,9 +3,11 @@ import 'package:gap/gap.dart';
 import 'package:lottie/lottie.dart';
 import 'package:taskati/core/constants/app_assets.dart';
 import 'package:taskati/core/functions/navigations.dart';
+import 'package:taskati/core/services/shared_pref.dart';
 import 'package:taskati/core/style/app_colors.dart';
 import 'package:taskati/core/style/text_styles.dart';
 import 'package:taskati/features/complete_profile/pages/complete_profile_page.dart';
+import 'package:taskati/features/home/page/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,9 +19,14 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
+    bool isUploaded = SharedPref.getBool(SharedPref.isUploadedKey);
     Future.delayed(Duration(seconds: 3, milliseconds: 500), () {
       if (!mounted) return;
-      replaceWith(context, CompleteProfilePage());
+      if (isUploaded) {
+        replaceWith(context, HomeScreen());
+      } else {
+        replaceWith(context, CompleteProfilePage());
+      }
     });
     super.initState();
   }

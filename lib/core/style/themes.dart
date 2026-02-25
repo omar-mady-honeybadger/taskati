@@ -17,12 +17,11 @@ abstract class AppThemes {
     inputDecorationTheme: InputDecorationTheme(
       fillColor: Colors.transparent,
       filled: true,
-      hintStyle: TextStyles.body3.copyWith(color: AppColors.grayScale60),
+      hintStyle: TextStyles.body3.copyWith(color: AppColors.secondary),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
         borderSide: BorderSide.none,
       ),
-      
     ),
   );
 }

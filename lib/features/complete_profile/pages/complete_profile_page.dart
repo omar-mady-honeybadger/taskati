@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/functions/navigations.dart';
+import 'package:taskati/core/services/shared_pref.dart';
 import 'package:taskati/core/style/app_colors.dart';
 import 'package:taskati/core/style/text_styles.dart';
 import 'package:taskati/core/widgets/custom_text_form_field.dart';
 import 'package:taskati/core/widgets/dialogs.dart';
 import 'package:taskati/core/widgets/main_button.dart';
 import 'package:taskati/core/widgets/tab_button.dart';
+import 'package:taskati/features/home/page/home_screen.dart';
 
 class CompleteProfilePage extends StatefulWidget {
   const CompleteProfilePage({super.key});
@@ -121,6 +124,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                       controller: nameController,
                       label: 'Your Name',
                       hintText: 'Enter Your Name',
+                      keyboardType: TextInputType.name,
                     ),
                     Gap(100),
                   ],
@@ -136,6 +140,9 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
           text: 'Let’s Start !',
           onPress: () {
             if (path != null && nameController.text.isNotEmpty) {
+              SharedPref.setUserInfo(nameController.text, path!);
+              SharedPref.setBool(SharedPref.isUploadedKey, true);
+              replaceWith(context, HomeScreen());
             } else if (path != null && nameController.text.isEmpty) {
               showErrorDialog(context, 'Please enter your name');
             } else if (path == null && nameController.text.isNotEmpty) {
