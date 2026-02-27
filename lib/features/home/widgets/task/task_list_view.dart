@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/models/task_model.dart';
 import 'package:taskati/core/style/app_colors.dart';
 import 'package:taskati/core/style/box_decoration.dart';
 import 'package:taskati/core/style/text_styles.dart';
 
 class TasksListView extends StatelessWidget {
-  const TasksListView({super.key});
+  const TasksListView({super.key, required this.tasks});
+
+  final List<TaskModel> tasks;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: 5,
+      itemCount: tasks.length,
       separatorBuilder: (BuildContext context, int index) {
         return Gap(12);
       },
       itemBuilder: (BuildContext context, int index) {
+        TaskModel task = tasks[index];
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: AppBoxDecoration.defaultDecoration,
@@ -24,14 +28,14 @@ class TasksListView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Title Of Task',
+                task.title ?? '',
                 style: TextStyles.body3.copyWith(fontWeight: FontWeight.w400),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               Gap(6),
               Text(
-                'Description Description Description Description Description Description Description Description Description',
+                task.description ?? '',
                 style: TextStyles.body4.copyWith(
                   fontWeight: FontWeight.w400,
                   color: AppColors.secondary,
@@ -49,7 +53,7 @@ class TasksListView extends StatelessWidget {
                   ),
                   Gap(6),
                   Text(
-                    '10:00 AM - 12:00 PM',
+                    '${task.startTime ?? ''} - ${task.endTime ?? ''}',
                     style: TextStyles.body4.copyWith(
                       color: AppColors.lightPurple,
                     ),
@@ -62,13 +66,17 @@ class TasksListView extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: AppColors.lightOrange,
+                      color: task.isCompleted == true
+                          ? AppColors.lightPurple
+                          : AppColors.lightOrange,
                     ),
                     child: Text(
-                      'In Progress',
+                      task.isCompleted == true ? 'Completed' : 'In Progress',
                       style: TextStyles.body5.copyWith(
                         fontWeight: FontWeight.w400,
-                        color: AppColors.orange,
+                        color: task.isCompleted == true
+                            ? AppColors.primary
+                            : AppColors.orange,
                       ),
                     ),
                   ),

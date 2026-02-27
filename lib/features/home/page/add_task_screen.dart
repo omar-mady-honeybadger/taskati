@@ -3,8 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:taskati/core/constants/app_assets.dart';
+import 'package:taskati/core/functions/navigations.dart';
+import 'package:taskati/core/models/task_model.dart';
+import 'package:taskati/core/services/hive_helper.dart';
 import 'package:taskati/core/style/text_styles.dart';
 import 'package:taskati/core/widgets/custom_text_form_field.dart';
+import 'package:taskati/core/widgets/main_button.dart';
+import 'package:taskati/features/home/page/home_screen.dart';
 import 'package:taskati/features/home/widgets/date_time_card.dart';
 
 class AddTaskScreen extends StatefulWidget {
@@ -15,6 +20,9 @@ class AddTaskScreen extends StatefulWidget {
 }
 
 class _AddTaskScreenState extends State<AddTaskScreen> {
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
+
   String date = DateFormat('dd MMM, yyy').format(DateTime.now());
   String startTime = DateFormat('hh:mm a').format(DateTime.now());
   String endTime = DateFormat(
@@ -38,11 +46,16 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           child: Column(
             children: [
               Gap(18),
-              CustomTextFormField(label: 'Title', hintText: 'Task title'),
+              CustomTextFormField(
+                label: 'Title',
+                hintText: 'Task title',
+                controller: titleController,
+              ),
               Gap(18),
               CustomTextFormField(
                 label: 'Description',
                 hintText: 'Task description',
+                controller: descController,
                 minLines: 4,
                 maxLines: 4,
               ),
@@ -78,7 +91,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   if (selectedStartTime != null) {
                     setState(() {
                       startTime = selectedStartTime.format(context);
-                    });}
+                    });
+                  }
                 },
               ),
               Gap(24),
@@ -94,11 +108,34 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   if (selectedEndTime != null) {
                     setState(() {
                       endTime = selectedEndTime.format(context);
-                    });}
+                    });
+                  }
                 },
               ),
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(22.0),
+        child: MainButton(
+          text: "Add Task",
+          onPress: () {
+            String id = DateTime.now().toString();
+            HiveHelper.cacheTask(
+              id,
+              TaskModel(
+                id: id,
+                title: titleController.text,
+                description: descController.text,
+                date: date,
+                startTime: startTime,
+                endTime: endTime,
+                isCompleted: false,
+              ),
+            );
+            replaceWith(context,HomeScreen());
+          },
         ),
       ),
     );
