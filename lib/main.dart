@@ -12,7 +12,7 @@ import 'package:taskati/hive/hive_registrar.g.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPref.init();
-  
+
   await Hive.initFlutter();
   Hive.registerAdapters();
   await HiveHelper.init();
@@ -33,6 +33,7 @@ class MainApp extends StatelessWidget {
           top: false,
           bottom: Platform.isAndroid,
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Stack(
               children: [
                 Container(

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taskati/core/constants/app_assets.dart';
@@ -23,12 +24,31 @@ class CompleteProfilePage extends StatefulWidget {
 
 class _CompleteProfilePageState extends State<CompleteProfilePage> {
   String? path;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = SharedPref.getString(SharedPref.nameKey);
+    path = SharedPref.getString(SharedPref.imageKey);
+  }
+
   final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Complete Your Profile', style: TextStyles.h1),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: SvgPicture.asset(AppAssets.arrowLeftSvg),
+              )
+            : null,
+        title: Text(
+          SharedPref.getBool(SharedPref.isUploadedKey)
+              ? 'Profile'
+              : 'Complete Your Profile',
+          style: TextStyles.h1,
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -137,12 +157,18 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(22.0),
         child: MainButton(
-          text: 'Let’s Start !',
+          text: SharedPref.getBool(SharedPref.isUploadedKey)
+              ? 'Save'
+              : 'Let’s Start !',
           onPress: () {
             if (path != null && nameController.text.isNotEmpty) {
               SharedPref.setUserInfo(nameController.text, path!);
               SharedPref.setBool(SharedPref.isUploadedKey, true);
-              replaceWith(context, HomeScreen());
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                replaceWith(context, const HomeScreen());
+              }
             } else if (path != null && nameController.text.isEmpty) {
               showErrorDialog(context, 'Please enter your name');
             } else if (path == null && nameController.text.isNotEmpty) {

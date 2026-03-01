@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:taskati/core/style/app_colors.dart';
 
 class CustomDatePicker extends StatefulWidget {
-  const CustomDatePicker({
-    super.key,
-  });
+  const CustomDatePicker({super.key, required this.onDateChange});
+
+  final Function(DateTime) onDateChange;
 
   @override
   State<CustomDatePicker> createState() => _CustomDatePickerState();
@@ -16,11 +16,12 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
 
   @override
   void initState() {
-    Future.delayed(Duration(milliseconds: 500), (){
+    Future.delayed(Duration(milliseconds: 500), () {
       controller.jumpToSelection();
     });
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return DatePicker(
@@ -32,7 +33,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
       deactivatedColor: Colors.white,
       selectionColor: AppColors.primary,
       selectedTextColor: Colors.white,
-      onDateChange: (date) {},
+      onDateChange: widget.onDateChange,
     );
   }
 }

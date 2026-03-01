@@ -3,23 +3,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:taskati/core/constants/app_assets.dart';
-import 'package:taskati/core/functions/navigations.dart';
 import 'package:taskati/core/models/task_model.dart';
 import 'package:taskati/core/services/hive_helper.dart';
 import 'package:taskati/core/style/text_styles.dart';
 import 'package:taskati/core/widgets/custom_text_form_field.dart';
 import 'package:taskati/core/widgets/main_button.dart';
-import 'package:taskati/features/home/page/home_screen.dart';
-import 'package:taskati/features/home/widgets/date_time_card.dart';
+import 'package:taskati/features/add_task/widgets/date_time_card.dart';
 
-class AddTaskScreen extends StatefulWidget {
-  const AddTaskScreen({super.key});
+class AddEditTaskScreen extends StatefulWidget {
+  const AddEditTaskScreen({super.key, this.task});
+
+  final TaskModel? task;
 
   @override
-  State<AddTaskScreen> createState() => _AddTaskScreenState();
+  State<AddEditTaskScreen> createState() => _AddEditTaskScreenState();
 }
 
-class _AddTaskScreenState extends State<AddTaskScreen> {
+class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
 
@@ -28,6 +28,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   String endTime = DateFormat(
     'hh:mm a',
   ).format(DateTime.now().add(Duration(hours: 1)));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.task != null) {
+      titleController.text = widget.task?.title ?? '';
+      descController.text = widget.task?.description ?? '';
+      date = widget.task?.date ?? '';
+      startTime = widget.task?.startTime ?? '';
+      endTime = widget.task?.endTime ?? '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +51,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           },
           icon: SvgPicture.asset(AppAssets.arrowLeftSvg),
         ),
-        title: Text('Add Task', style: TextStyles.body1),
+        title: Text(
+          widget.task == null ? 'Add Task' : 'Edit Task',
+          style: TextStyles.body1,
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -119,9 +135,10 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(22.0),
         child: MainButton(
-          text: "Add Task",
+          text: widget.task == null ? 'Add Task' : 'Save',
           onPress: () {
-            String id = DateTime.now().toString();
+            if(widget.task == null){
+              String id = DateTime.now().toString();
             HiveHelper.cacheTask(
               id,
               TaskModel(
@@ -134,7 +151,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 isCompleted: false,
               ),
             );
-            replaceWith(context,HomeScreen());
+            Navigator.pop(context);
+            }else{
+            HiveHelper.cacheTask(
+              widget.task?.id?? '',
+              widget.task!.copyWith(
+                title: titleController.text,
+                description: descController.text,
+                date: date,
+                startTime: startTime,
+                endTime: endTime,
+                isCompleted: false,
+              ),
+            );
+            Navigator.pop(context);
+            }
           },
         ),
       ),
